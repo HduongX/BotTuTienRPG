@@ -1,4 +1,4 @@
-import discord, os, asyncio
+import discord, os
 from discord.ext import commands
 from dotenv import load_dotenv
 from database import init_db
@@ -14,8 +14,15 @@ async def on_ready():
     await bot.tree.sync()
     print(f"Bot online: {bot.user}")
 
-for file in os.listdir("cogs"):
-    if file.endswith(".py"):
-        bot.load_extension(f"cogs.{file[:-3]}")
+async def load_cogs():
+    for file in os.listdir("cogs"):
+        if file.endswith(".py"):
+            await bot.load_extension(f"cogs.{file[:-3]}")
 
-bot.run(os.getenv("BOT_TOKEN"))
+async def main():
+    async with bot:
+        await load_cogs()
+        await bot.start(os.getenv("BOT_TOKEN"))
+
+import asyncio
+asyncio.run(main())
